@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Happy Birthday</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #212529;
+            --primary-btn: #000000;
+            --primary-text: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            transition: background-color 2s ease;
+        }
+
+        /* Changes background color on the final screen */
+        body.warm-bg {
+            background-color: #fdf5e6; 
+        }
+
+        .screen {
+            position: absolute;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.5;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--primary-btn);
+            color: var(--primary-text);
+            cursor: pointer;
+            transition: transform 0.1s;
+            font-weight: 600;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .secondary-btn {
+            background-color: #e9ecef;
+            color: #212529;
+        }
+
+        /* Screen 2 Staggered Animation */
+        .line2 {
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+            animation-delay: 2s; /* Pauses before revealing the second line */
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Screen 3 Dodging Button Container */
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            position: relative;
+            margin-top: 20px;
+        }
+
+        #noBtn {
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        /* Screen 4 Delayed Buttons */
+        #final-actions {
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+            animation-delay: 3.5s; /* Forces her to read the text first */
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        a.btn-link {
+            text-decoration: none;
+            display: block;
+        }
+        
+        a.btn-link button {
+            width: 100%;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="screen1" class="screen active">
+        <p>Happy Birthday! Hope you have a great day.</p>
+        <button onclick="nextScreen(1, 2)">Click for your actual present</button>
+    </div>
+
+    <div id="screen2" class="screen">
+        <p>Okay, full disclosure...</p>
+        <p class="line2">...there is no present.</p>
+        <button class="line2" onclick="nextScreen(2, 3)">Wait, what?</button>
+    </div>
+
+    <div id="screen3" class="screen">
+        <p>Well, I do have a confession to make.</p>
+        <div class="button-group">
+            <button onclick="nextScreen(3, 4)">Tell me</button>
+            <button id="noBtn" class="secondary-btn">I'm not interested</button>
+        </div>
+    </div>
+
+    <div id="screen4" class="screen">
+        <p>The truth is, I have a problem. I like you a bit more than before every day that passes by.</p>
+        <p>And since I am currently abroad and can't take you out for a drink to flirt with you in person, I had to build a whole website just to tell you.</p>
+        
+        <div id="final-actions">
+            <a class="btn-link" href="whatsapp://send?text=A%2B%20for%20effort.">
+                <button>A+ for effort.</button>
+            </a>
+            <a class="btn-link" href="whatsapp://send?text=You%20are%20ridiculous.">
+                <button class="secondary-btn">You are ridiculous.</button>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Function to handle screen transitions
+        function nextScreen(currentId, nextId) {
+            document.getElementById('screen' + currentId).classList.remove('active');
+            
+            // Add a slight delay before showing the next screen to make it feel deliberate
+            setTimeout(() => {
+                document.getElementById('screen' + nextId).classList.add('active');
+                
+                // Change background color on final screen
+                if(nextId === 4) {
+                    document.body.classList.add('warm-bg');
+                }
+            }, 300);
+        }
+
+        // Dodging Button Logic
+        const noBtn = document.getElementById('noBtn');
+
+        function moveButton() {
+            // Calculate maximum movement bounds relative to the button's original position
+            const maxX = 100; 
+            const maxY = 100;
+            
+            // Generate random X and Y translations (positive or negative)
+            const randomX = (Math.random() - 0.5) * 2 * maxX;
+            const randomY = (Math.random() - 0.5) * 2 * maxY;
+            
+            noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+        }
+
+        // Trigger movement on hover (desktop) or touch (mobile)
+        noBtn.addEventListener('mouseover', moveButton);
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevents the actual click from registering on mobile
+            moveButton();
+        });
+    </script>
+
+</body>
+</html>
