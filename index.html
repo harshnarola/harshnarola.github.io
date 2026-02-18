@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Happy Birthday</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700;9..144,900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --peach:#FFE8D6;--coral:#FF6B6B;--blush:#FF8FA3;
+  --wine:#6B2737;--cream:#FFF8F0;--warm:#FDF0E2;
+  --deep:#2D1B2E;--gold:#D4A853;
+}
+
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--cream);
+  color:var(--deep);
+  min-height:100vh;height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  transition:background 1.5s ease;
+}
+
+/* ─── Floating particles ─── */
+.particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.particle{
+  position:absolute;
+  width:6px;height:6px;
+  border-radius:50%;
+  opacity:0;
+  animation:floatUp linear infinite;
+}
+@keyframes floatUp{
+  0%{opacity:0;transform:translateY(100vh) scale(0)}
+  10%{opacity:0.6}
+  90%{opacity:0.3}
+  100%{opacity:0;transform:translateY(-10vh) scale(1)}
+}
+
+/* ─── Screens ─── */
+.screen{
+  position:absolute;
+  width:88%;max-width:400px;
+  text-align:center;
+  opacity:0;pointer-events:none;
+  transform:translateY(30px) scale(0.97);
+  transition:opacity 0.7s ease,transform 0.7s ease;
+  z-index:2;
+}
+.screen.active{
+  opacity:1;pointer-events:auto;
+  transform:translateY(0) scale(1);
+}
+
+/* ─── Card ─── */
+.card{
+  background:white;
+  border-radius:24px;
+  padding:36px 28px;
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.04),
+    0 8px 32px rgba(109,39,55,0.08),
+    0 24px 60px rgba(109,39,55,0.06);
+  display:flex;flex-direction:column;gap:20px;
+  position:relative;overflow:hidden;
+}
+
+.card::before{
+  content:'';position:absolute;top:-50%;right:-50%;
+  width:200%;height:200%;
+  background:radial-gradient(circle at 70% 30%,rgba(255,143,163,0.06) 0%,transparent 50%);
+  pointer-events:none;
+}
+
+/* ─── Typography ─── */
+h1{
+  font-family:'Fraunces',serif;
+  font-weight:900;font-size:2rem;
+  color:var(--coral);
+  line-height:1.2;
+}
+
+h2{
+  font-family:'Fraunces',serif;
+  font-weight:700;font-size:1.4rem;
+  color:var(--wine);
+  line-height:1.3;
+}
+
+p{font-size:1.05rem;line-height:1.6;color:#4A3040}
+p.small{font-size:0.85rem;color:#9A8090}
+
+.emoji-big{font-size:3rem;display:block;margin-bottom:4px}
+
+/* ─── Buttons ─── */
+.btn{
+  display:inline-block;
+  padding:14px 32px;
+  font-family:'DM Sans',sans-serif;
+  font-size:1rem;font-weight:600;
+  border:none;border-radius:60px;
+  cursor:pointer;
+  transition:transform 0.15s ease,box-shadow 0.25s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn:active{transform:scale(0.96)}
+
+.btn-primary{
+  background:linear-gradient(135deg,var(--coral),var(--blush));
+  color:white;
+  box-shadow:0 4px 20px rgba(255,107,107,0.3);
+}
+.btn-primary:hover{box-shadow:0 6px 28px rgba(255,107,107,0.4)}
+
+.btn-soft{
+  background:var(--peach);
+  color:var(--wine);
+  box-shadow:none;
+}
+
+.btn-ghost{
+  background:transparent;
+  color:var(--blush);
+  text-decoration:underline;
+  text-underline-offset:3px;
+  padding:10px 16px;
+}
+
+.btn-group{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* ─── Scratch Card ─── */
+.scratch-wrapper{
+  position:relative;
+  width:240px;height:240px;
+  margin:0 auto;
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 4px 24px rgba(109,39,55,0.12);
+}
+
+.scratch-wrapper .hidden-content{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:8px;
+  background:linear-gradient(135deg,#FFE8D6,#FFD4C2);
+  font-family:'DM Sans',sans-serif;
+  color:var(--wine);
+  font-size:0.95rem;
+  padding:24px;
+  line-height:1.5;
+  text-align:center;
+}
+
+.scratch-wrapper .hidden-content .emoji-reveal{font-size:3rem;margin-bottom:4px}
+
+.scratch-wrapper canvas{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  cursor:crosshair;
+  touch-action:none;
+}
+
+/* ─── Dodging button ─── */
+#noBtn{
+  position:relative;
+  transition:none;
+  z-index:5;
+}
+
+/* ─── Typewriter ─── */
+.typewriter{
+  font-size:1.05rem;line-height:1.7;
+  color:#4A3040;
+  min-height:80px;
+  text-align:left;
+}
+.typewriter .cursor{
+  display:inline-block;width:2px;height:1.1em;
+  background:var(--coral);
+  margin-left:2px;
+  animation:blink 0.7s infinite;
+  vertical-align:text-bottom;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ─── Reason counter ─── */
+.reason-box{
+  background:var(--warm);
+  border-radius:16px;
+  padding:20px;
+  text-align:left;
+}
+.reason-box .reason-num{
+  font-family:'Fraunces',serif;
+  font-weight:900;font-size:2.5rem;
+  color:var(--coral);
+  line-height:1;
+}
+.reason-box .reason-text{
+  font-size:1rem;color:var(--wine);
+  margin-top:6px;line-height:1.5;
+}
+
+/* ─── Final screen ─── */
+.final-card{
+  background:linear-gradient(160deg,#FFF1EB,#FFE4F0,#E8F0FF);
+  border-radius:24px;
+  padding:40px 28px;
+  box-shadow:
+    0 8px 40px rgba(109,39,55,0.1),
+    0 24px 60px rgba(109,39,55,0.06);
+  display:flex;flex-direction:column;gap:20px;
+}
+
+/* ─── Phone number card ─── */
+.number-card{
+  background:white;
+  border-radius:16px;
+  padding:20px;
+  margin-top:4px;
+  opacity:0;
+  animation:fadeSlideIn 0.6s ease 4s forwards;
+  box-shadow:0 2px 12px rgba(109,39,55,0.06);
+}
+
+.number-card .label{
+  font-size:0.75rem;
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  color:#9A8090;
+  margin-bottom:8px;
+  font-weight:600;
+}
+
+.number-card .phone{
+  font-family:'Fraunces',serif;
+  font-weight:700;
+  font-size:1.5rem;
+  color:var(--coral);
+  letter-spacing:1px;
+}
+
+.number-card .subtext{
+  font-size:0.82rem;
+  color:#9A8090;
+  margin-top:8px;
+  line-height:1.4;
+}
+
+.response-area{
+  opacity:0;
+  animation:fadeSlideIn 0.6s ease 5s forwards;
+  display:flex;flex-direction:column;gap:10px;
+}
+
+.response-area a{text-decoration:none}
+.response-area .btn{width:100%;display:block}
+
+.or-divider{
+  font-size:0.8rem;
+  color:#B8A0B0;
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+
+@keyframes fadeSlideIn{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ─── Progress dots ─── */
+.progress{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  display:flex;gap:8px;z-index:10;
+}
+.dot{
+  width:8px;height:8px;border-radius:50%;
+  background:rgba(109,39,55,0.15);
+  transition:all 0.4s ease;
+}
+.dot.active{
+  background:var(--coral);
+  width:24px;border-radius:4px;
+}
+
+/* ─── Reveal animation helpers ─── */
+.fade-in-delayed{opacity:0;animation:fadeSlideIn 0.6s ease forwards}
+.delay-1{animation-delay:1.5s}
+.delay-2{animation-delay:2.5s}
+
+/* ─── Hearts burst ─── */
+.hearts-container{
+  position:fixed;inset:0;
+  pointer-events:none;z-index:100;
+  overflow:hidden;
+}
+.heart-float{
+  position:absolute;
+  font-size:1.4rem;
+  opacity:0;
+  animation:heartRise 3s ease-out forwards;
+}
+@keyframes heartRise{
+  0%{opacity:0;transform:translateY(0) scale(0) rotate(0deg)}
+  15%{opacity:1;transform:translateY(-40px) scale(1) rotate(-10deg)}
+  100%{opacity:0;transform:translateY(-400px) scale(0.6) rotate(20deg)}
+}
+</style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+<div class="hearts-container" id="hearts"></div>
+
+<!-- ═══════ SCREEN 1: Scratch Card ═══════ -->
+<div id="s1" class="screen active">
+  <div class="card">
+    <div>
+      <span class="emoji-big">🎂</span>
+      <h1>Happy Birthday!</h1>
+      <p>I made you something. Scratch below to find it.</p>
+    </div>
+
+    <div class="scratch-wrapper">
+      <div class="hidden-content">
+        <span class="emoji-reveal">🫠</span>
+        <span>Yeah I had absolutely<br>nothing to put here.<br><br>I panicked.<br>This is embarrassing.</span>
+      </div>
+      <canvas id="scratchPad"></canvas>
+    </div>
+
+    <button class="btn btn-primary" onclick="goTo(2)">Okay, what else? →</button>
+  </div>
+</div>
+
+<!-- ═══════ SCREEN 2: The Letdown ═══════ -->
+<div id="s2" class="screen">
+  <div class="card">
+    <div>
+      <span class="emoji-big">😬</span>
+      <h2>So... full disclosure.</h2>
+    </div>
+    <p>As you just saw, there's no gift behind the scratch card. Just pure audacity.</p>
+    <p class="fade-in-delayed delay-1">But I <em>do</em> have something to say.</p>
+    <button class="btn btn-primary fade-in-delayed delay-2" onclick="goTo(3)">Go on...</button>
+  </div>
+</div>
+
+<!-- ═══════ SCREEN 3: The Confession Setup ═══════ -->
+<div id="s3" class="screen">
+  <div class="card">
+    <div>
+      <span class="emoji-big">🫣</span>
+      <h2>Okay, here it goes.</h2>
+    </div>
+    <p>I have a tiny little confession. Ready?</p>
+    <div class="btn-group" id="confessionBtns">
+      <button class="btn btn-primary" onclick="goTo(4)">Tell me 💬</button>
+      <button class="btn btn-soft" id="noBtn">Not interested</button>
+    </div>
+    <p class="small" id="dodgeCounter" style="margin-top:4px;opacity:0;transition:opacity 0.3s"></p>
+  </div>
+</div>
+
+<!-- ═══════ SCREEN 4: Reasons ═══════ -->
+<div id="s4" class="screen">
+  <div class="card">
+    <div>
+      <span class="emoji-big">✨</span>
+      <h2>First, some context.</h2>
+      <p class="small">Things I've noticed about you:</p>
+    </div>
+    <div id="reasonContainer">
+      <div class="reason-box">
+        <div class="reason-num" id="reasonNum">#1</div>
+        <div class="reason-text" id="reasonText">Loading...</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="nextReasonBtn" onclick="nextReason()">Next →</button>
+    <button class="btn btn-ghost" id="skipReasons" onclick="goTo(5)" style="display:none">skip to the point →</button>
+  </div>
+</div>
+
+<!-- ═══════ SCREEN 5: The Confession + Number ═══════ -->
+<div id="s5" class="screen">
+  <div class="final-card">
+    <div>
+      <span class="emoji-big">💌</span>
+      <h2 style="color:var(--coral)">Here's the truth.</h2>
+    </div>
+    <div class="typewriter" id="confessionText"><span class="cursor"></span></div>
+
+    <!-- ── Phone Number ── -->
+    <div class="number-card">
+      <div class="label">My number — in case you feel like it</div>
+      <!--
+        ╔════════════════════════════════════════╗
+        ║  REPLACE THE NUMBER BELOW WITH YOURS   ║
+        ╚════════════════════════════════════════╝
+      -->
+      <div class="phone" id="myNumber">+91 98765 43210</div>
+      <div class="subtext">No pressure. But also... a little pressure.</div>
+    </div>
+
+    <!-- ── Response Buttons ── -->
+    <div class="response-area">
+      <!--
+        Replace YOUR_NUMBER below with your actual
+        number (with country code, no spaces/dashes).
+        e.g. tel:+919876543210
+        and sms:+919876543210
+      -->
+      <a href="sms:+919876543210">
+        <button class="btn btn-primary">Text me something ✏️</button>
+      </a>
+      <div class="or-divider">or</div>
+      <a href="https://ig.me/m/YOUR_INSTAGRAM_USERNAME">
+        <button class="btn btn-soft">Reply on Instagram</button>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ Progress Dots ═══════ -->
+<div class="progress" id="progress">
+  <div class="dot active"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+</div>
+
+<script>
+/* ─── Screen Navigation ─── */
+let current = 1;
+
+function goTo(n) {
+  document.getElementById('s' + current).classList.remove('active');
+  setTimeout(() => {
+    document.getElementById('s' + n).classList.add('active');
+    current = n;
+    updateDots(n);
+
+    if (n === 4) initReasons();
+    if (n === 5) {
+      document.body.style.background = 'linear-gradient(160deg,#FFF1EB,#FFE4F0,#E8F0FF)';
+      startTypewriter();
+      burstHearts();
+    }
+  }, 400);
+}
+
+function updateDots(n) {
+  document.querySelectorAll('.dot').forEach((d, i) => {
+    d.classList.toggle('active', i === n - 1);
+  });
+}
+
+/* ─── Particles ─── */
+(function initParticles() {
+  const container = document.getElementById('particles');
+  const colors = ['#FF6B6B','#FF8FA3','#FFB3C1','#D4A853','#FFE8D6'];
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    p.style.animationDuration = (6 + Math.random() * 8) + 's';
+    p.style.animationDelay = (Math.random() * 10) + 's';
+    p.style.width = p.style.height = (4 + Math.random() * 5) + 'px';
+    container.appendChild(p);
+  }
+})();
+
+/* ─── Scratch Card ─── */
+(function initScratch() {
+  const canvas = document.getElementById('scratchPad');
+  const ctx = canvas.getContext('2d');
+  canvas.width = 240; canvas.height = 240;
+  let drawing = false;
+
+  const grad = ctx.createLinearGradient(0, 0, 240, 240);
+  grad.addColorStop(0, '#C4B5A8');
+  grad.addColorStop(1, '#B8A99A');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 240, 240);
+
+  ctx.globalAlpha = 0.08;
+  for (let i = 0; i < 12; i++) {
+    ctx.beginPath();
+    ctx.arc(Math.random()*240, Math.random()*240, 20+Math.random()*30, 0, Math.PI*2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  ctx.font = '500 16px DM Sans';
+  ctx.fillStyle = '#8A7A6A';
+  ctx.textAlign = 'center';
+  ctx.fillText('✦ scratch here ✦', 120, 126);
+
+  ctx.globalCompositeOperation = 'destination-out';
+
+  function getPos(e) {
+    const r = canvas.getBoundingClientRect();
+    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    const cy = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x: (cx - r.left) * (240 / r.width), y: (cy - r.top) * (240 / r.height) };
+  }
+
+  function draw(e) {
+    if (!drawing) return;
+    e.preventDefault();
+    const p = getPos(e);
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 22, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  canvas.addEventListener('mousedown', () => drawing = true);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', () => drawing = false);
+  canvas.addEventListener('mouseleave', () => drawing = false);
+  canvas.addEventListener('touchstart', (e) => { drawing = true; draw(e); }, { passive: false });
+  canvas.addEventListener('touchmove', draw, { passive: false });
+  canvas.addEventListener('touchend', () => drawing = false);
+})();
+
+/* ─── Dodging Button ─── */
+(function initDodge() {
+  const noBtn = document.getElementById('noBtn');
+  const counter = document.getElementById('dodgeCounter');
+  let dodges = 0;
+  const msgs = [
+    "Nice try 😏",
+    "Nope, not happening",
+    "You can't escape this",
+    "I didn't build a whole website for nothing",
+    "Just press the other one 😄",
+    "I can do this all day",
+    "Your self-obsession won't save you here",
+    "JUST LET ME CONFESS",
+  ];
+
+  function dodge(e) {
+    if (e) e.preventDefault();
+    dodges++;
+    const maxX = 140, maxY = 100;
+    let rx = (Math.random() - 0.5) * 2 * maxX;
+    let ry = (Math.random() - 0.5) * 2 * maxY;
+    if (Math.abs(rx) < 50) rx += rx > 0 ? 50 : -50;
+    if (Math.abs(ry) < 40) ry += ry > 0 ? 40 : -40;
+    noBtn.style.transform = `translate(${rx}px, ${ry}px)`;
+
+    counter.style.opacity = '1';
+    counter.textContent = msgs[Math.min(dodges - 1, msgs.length - 1)];
+  }
+
+  noBtn.addEventListener('mouseover', dodge);
+  noBtn.addEventListener('touchstart', dodge, { passive: false });
+})();
+
+/* ─── Reasons Carousel ─── */
+const reasons = [
+  "\"Heavenly Hel — self-obsessed 24/7.\" Most people try to hide it. You put it in your bio. That level of confidence? Dangerously attractive.",
+  "Those dimples. You smile and suddenly I forget what I was saying, what I was doing, and roughly half of my own personality.",
+  "You don't wait around for someone to figure things out for you. A woman who handles her own life and doesn't need rescuing — that's more impressive than you probably realize.",
+  "Every conversation we've had so far — you just say what you mean. No games, no performing. It's rare, and honestly, it's the thing I keep coming back to.",
+];
+
+let reasonIdx = 0;
+
+function initReasons() {
+  reasonIdx = 0;
+  showReason(0);
+}
+
+function showReason(i) {
+  const numEl = document.getElementById('reasonNum');
+  const textEl = document.getElementById('reasonText');
+  const box = document.querySelector('.reason-box');
+
+  box.style.opacity = '0';
+  box.style.transform = 'translateY(10px)';
+  box.style.transition = 'all 0.3s ease';
+
+  setTimeout(() => {
+    numEl.textContent = '#' + (i + 1);
+    textEl.textContent = reasons[i];
+    box.style.opacity = '1';
+    box.style.transform = 'translateY(0)';
+  }, 200);
+
+  if (i >= 2) {
+    document.getElementById('skipReasons').style.display = 'inline-block';
+  }
+
+  if (i === reasons.length - 1) {
+    document.getElementById('nextReasonBtn').textContent = 'Okay, I get it →';
+    document.getElementById('nextReasonBtn').onclick = () => goTo(5);
+  }
+}
+
+function nextReason() {
+  reasonIdx++;
+  if (reasonIdx < reasons.length) {
+    showReason(reasonIdx);
+  } else {
+    goTo(5);
+  }
+}
+
+/* ─── Typewriter ─── */
+function startTypewriter() {
+  const el = document.getElementById('confessionText');
+  const text = "Every time we talk, I like you a little more than the last time. It's becoming a real problem.\n\nAnd since I can't exactly take you out for a drink and say this to your face right now — I built you a whole website instead. Because apparently that's the kind of person I am now.\n\nHappy birthday. You deserve someone making a fool of themselves for you today.";
+
+  el.innerHTML = '<span class="cursor"></span>';
+  let i = 0;
+
+  function type() {
+    if (i < text.length) {
+      const char = text[i] === '\n' ? '<br>' : text[i];
+      el.querySelector('.cursor').insertAdjacentHTML('beforebegin', char);
+      i++;
+      setTimeout(type, text[i-1] === '\n' ? 300 : 28 + Math.random() * 20);
+    } else {
+      el.querySelector('.cursor').remove();
+    }
+  }
+  setTimeout(type, 600);
+}
+
+/* ─── Hearts Burst ─── */
+function burstHearts() {
+  const container = document.getElementById('hearts');
+  const emojis = ['💛','🧡','💕','✨','🌸','💗'];
+  let count = 0;
+  const interval = setInterval(() => {
+    if (count >= 20) { clearInterval(interval); return; }
+    const h = document.createElement('div');
+    h.className = 'heart-float';
+    h.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    h.style.left = (10 + Math.random() * 80) + '%';
+    h.style.bottom = '-20px';
+    h.style.animationDelay = (Math.random() * 0.5) + 's';
+    h.style.fontSize = (1 + Math.random() * 1.2) + 'rem';
+    container.appendChild(h);
+    setTimeout(() => h.remove(), 3500);
+    count++;
+  }, 200);
+}
+</script>
+
+</body>
+</html>
