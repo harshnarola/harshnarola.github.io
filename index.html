@@ -100,9 +100,9 @@
         }
 
         #noBtn {
-            position: relative;
-            transition: all 0.2s ease;
-        }
+    		position: relative;
+    		transition: none; /* Removed the delay so it jumps instantly on mobile */
+	}
 
         /* Screen 4 Delayed Buttons */
         #final-actions {
@@ -181,12 +181,15 @@
 
         function moveButton() {
             // Calculate maximum movement bounds relative to the button's original position
-            const maxX = 100; 
-            const maxY = 100;
+            const maxX = 180; 
+            const maxY = 180;
             
             // Generate random X and Y translations (positive or negative)
             const randomX = (Math.random() - 0.5) * 2 * maxX;
             const randomY = (Math.random() - 0.5) * 2 * maxY;
+		// Force a minimum jump distance so it never stays under her finger
+    		if (Math.abs(randomX) < 60) randomX = randomX > 0 ? randomX + 60 : randomX - 60;
+    		if (Math.abs(randomY) < 60) randomY = randomY > 0 ? randomY + 60 : randomY - 60;
             
             noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
         }
